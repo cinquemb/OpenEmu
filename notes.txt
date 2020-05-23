@@ -10,6 +10,8 @@ To compile OpenEmu and the core plugins, change -scheme "OpenEmu" to
 
 https://github.com/OpenEmu/OpenEmu/blob/cd6aff786447237a61d330fb928a91d1567dfb65/OpenEmu/OpenEmuHelperApp.m
 
+https://stackoverflow.com/questions/41157874/use-legacy-swift-language-version-swift-version-is-required-to-be-configured
+
 
 - (void)systemBindingsDidSetEvent:(OEHIDEvent *)event forBinding:(__kindof OEBindingDescription *)bindingDescription playerNumber:(NSUInteger)playerNumber
 {
@@ -29,10 +31,29 @@ https://github.com/OpenEmu/OpenEmu/blob/cd6aff786447237a61d330fb928a91d1567dfb65
 - get timestamp in milliseconds, convert to string
 NSTimeInterval seconds = [NSDate timeIntervalSinceReferenceDate];
 double timenumber = seconds*1000;
-NSNumber *myDoubleNumber = [NSNumber numberWithDouble:timenumber];
-NSString timestring [myDoubleNumber stringValue];
 
+NSNumber *myDoubleNumber = [NSNumber numberWithDouble:timenumber];
+NSString *timestring = [myDoubleNumber stringValue];
+
+NSString *datastring = [NSString stringWithFormat:@"%zu", playerNumber];
+
+NSString *outputString = [NSString stringWithFormat:@"%@: %@", timestring, datastring];
 [timestring writeToFile:@"/dev/stdout" atomically:NO encoding:NSUTF8StringEncoding error:nil];
+
+
+---
+NSTimeInterval seconds = [NSDate timeIntervalSinceReferenceDate];
+    double timenumber = seconds*1000;
+
+    NSNumber *myDoubleNumber = [NSNumber numberWithDouble:timenumber];
+    NSString *timestring = [myDoubleNumber stringValue];
+
+    NSString *datastring = [NSString stringWithFormat:@"%zu", [aKey player]];
+    NSString *keystring = [NSString stringWithFormat:@"%zu", [aKey key]];
+
+    NSString *outputString = [NSString stringWithFormat:@"%@: %@, %@", timestring, datastring, keystring];
+    [timestring writeToFile:@"/dev/stdout" atomically:NO encoding:NSUTF8StringEncoding error:nil];
+---
 
 
 look for way to print timestamp and number
