@@ -703,7 +703,7 @@ NSString * const OptionsKey = @"options";
         }
 
         NSString *key  = [colorObject objectForKey:KeyKey];
-        NSString *value = [[sender color] toString];
+        NSString *value = [(id)[sender color] toString];
 
         [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
     }
