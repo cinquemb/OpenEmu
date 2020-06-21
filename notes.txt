@@ -42,7 +42,7 @@ NSString *outputString = [NSString stringWithFormat:@"%@: %@", timestring, datas
 
 
 ---
-NSTimeInterval seconds = [NSDate timeIntervalSinceReferenceDate];
+	NSTimeInterval seconds = [NSDate timeIntervalSinceReferenceDate];
     double timenumber = seconds*1000;
 
     NSNumber *myDoubleNumber = [NSNumber numberWithDouble:timenumber];
@@ -58,8 +58,8 @@ NSTimeInterval seconds = [NSDate timeIntervalSinceReferenceDate];
 
 look for way to print timestamp and number
 
-NSString *path = [NSHomeDirectory() stringByAppendingPathComponent:@"tmp"]; //get tmp path
-NSString *filePath = [path stringByAppendingPathComponent:@"cool.txt"];
+NSString *path = [NSHomeDirectory() stringByAppendingPathComponent:@"Desktop"]; //get tmp path
+NSString *filePath = [path stringByAppendingPathComponent:@"OpenEmuControllerLog.txt"];
 
 NSString *str = @"hello world";
 NSError *error;
@@ -67,3 +67,39 @@ NSError *error;
 
 NSString *str1 = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
 NSLog(@"%@", str1);
+
+---
+
+
+look into wrting to file with os_log_t?
+
+
+DeSuMe speed: https://wiki.desmume.org/index.php?title=Faq
+
+FRAME_SKIP_AGGRESSIVENESS = 2
+
+use 1 core: https://forums.desmume.org/viewtopic.php?id=9537 
+
+max smaples msaa: https://github.com/TASVideos/desmume/pull/205/files
+
+speed up: https://github.com/TASVideos/desmume/blob/23f4dcc0094e9dcb77494593831b6aef9aaf3b5b/desmume/README.MAC
+
+desmume/src/frontend/cocoa/ClientExecutionControl.cpp
+desmume/src/frontend/cocoa/ClientExecutionControl.h
+desmume/src/frontend/cocoa/cocoa_GPU.mm
+desmume/src/frontend/cocoa/cocoa_core.mm
+desmume/src/frontend/cocoa/cocoa_output.mm
+desmume/src/frontend/cocoa/userinterface/EmuControllerDelegate.mm
+desmume/src/frontend/cocoa/userinterface/preferencesWindowDelegate.mm
+
+- use shared memory to get BCI output commands
+    - loop that checks for shared mem for neural command
+        - use cfrunlooptimer, attach to cfrunloop
+            - https://stackoverflow.com/questions/16340537/why-is-my-cfrunlooptimer-not-firing
+        
+        - where will loop go? 
+            - OpenEmu-SDK/OpenEmuSystem/OEHIDDeviceHandler.m ?
+    - create an event based on the neural command
+        - init based on OpenEmu-SDK/OpenEmuSystem/OEHIDEvent.m
+    - dispatch event within loop:
+        - [self dispatchEvent:[self eventWithHIDValue:aValue]];
