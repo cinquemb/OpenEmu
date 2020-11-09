@@ -1,6 +1,17 @@
-compile 
+# compile #
 
 xcodebuild -workspace OpenEmu.xcworkspace -scheme "OpenEmu" -configuration Release
+
+clang++ -Wall -O3 -std=gnu++14 -stdlib=libc++ -pedantic -I/usr/local/include membridge.cpp -o nfb
+
+# list shared mem #
+
+ipcs
+
+# remove shared mem #
+
+ipcrm
+
 
 The compiled OpenEmu.app binary is located in the default DerivedData path, ~/Library/Developer/Xcode/DerivedData within a generated OpenEmu-... folder and then inside Build/Products/Release
 
@@ -11,67 +22,6 @@ To compile OpenEmu and the core plugins, change -scheme "OpenEmu" to
 https://github.com/OpenEmu/OpenEmu/blob/cd6aff786447237a61d330fb928a91d1567dfb65/OpenEmu/OpenEmuHelperApp.m
 
 https://stackoverflow.com/questions/41157874/use-legacy-swift-language-version-swift-version-is-required-to-be-configured
-
-
-- (void)systemBindingsDidSetEvent:(OEHIDEvent *)event forBinding:(__kindof OEBindingDescription *)bindingDescription playerNumber:(NSUInteger)playerNumber
-{
-    [self _updateBindingForEvent:event withBlock:^{
-        [self->_systemResponder systemBindingsDidSetEvent:event forBinding:bindingDescription playerNumber:playerNumber];
-    }];
-}
-
-- (void)systemBindingsDidUnsetEvent:(OEHIDEvent *)event forBinding:(__kindof OEBindingDescription *)bindingDescription playerNumber:(NSUInteger)playerNumber
-{
-    [self _updateBindingForEvent:event withBlock:^{
-        [self->_systemResponder systemBindingsDidUnsetEvent:event forBinding:bindingDescription playerNumber:playerNumber];
-    }];
-}
-
-
-- get timestamp in milliseconds, convert to string
-NSTimeInterval seconds = [NSDate timeIntervalSinceReferenceDate];
-double timenumber = seconds*1000;
-
-NSNumber *myDoubleNumber = [NSNumber numberWithDouble:timenumber];
-NSString *timestring = [myDoubleNumber stringValue];
-
-NSString *datastring = [NSString stringWithFormat:@"%zu", playerNumber];
-
-NSString *outputString = [NSString stringWithFormat:@"%@: %@", timestring, datastring];
-[timestring writeToFile:@"/dev/stdout" atomically:NO encoding:NSUTF8StringEncoding error:nil];
-
-
----
-	NSTimeInterval seconds = [NSDate timeIntervalSinceReferenceDate];
-    double timenumber = seconds*1000;
-
-    NSNumber *myDoubleNumber = [NSNumber numberWithDouble:timenumber];
-    NSString *timestring = [myDoubleNumber stringValue];
-
-    NSString *datastring = [NSString stringWithFormat:@"%zu", [aKey player]];
-    NSString *keystring = [NSString stringWithFormat:@"%zu", [aKey key]];
-
-    NSString *outputString = [NSString stringWithFormat:@"%@: %@, %@", timestring, datastring, keystring];
-    [timestring writeToFile:@"/dev/stdout" atomically:NO encoding:NSUTF8StringEncoding error:nil];
----
-
-
-look for way to print timestamp and number
-
-NSString *path = [NSHomeDirectory() stringByAppendingPathComponent:@"Desktop"]; //get tmp path
-NSString *filePath = [path stringByAppendingPathComponent:@"OpenEmuControllerLog.txt"];
-
-NSString *str = @"hello world";
-NSError *error;
-[str writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
-
-NSString *str1 = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
-NSLog(@"%@", str1);
-
----
-
-
-look into wrting to file with os_log_t?
 
 
 DeSuMe speed: https://wiki.desmume.org/index.php?title=Faq
@@ -93,13 +43,4 @@ desmume/src/frontend/cocoa/userinterface/EmuControllerDelegate.mm
 desmume/src/frontend/cocoa/userinterface/preferencesWindowDelegate.mm
 
 - use shared memory to get BCI output commands
-    - loop that checks for shared mem for neural command
-        - use cfrunlooptimer, attach to cfrunloop
-            - https://stackoverflow.com/questions/16340537/why-is-my-cfrunlooptimer-not-firing
-        
-        - where will loop go? 
-            - OpenEmu-SDK/OpenEmuSystem/OEHIDDeviceHandler.m ?
-    - create an event based on the neural command
-        - init based on OpenEmu-SDK/OpenEmuSystem/OEHIDEvent.m
-    - dispatch event within loop:
-        - [self dispatchEvent:[self eventWithHIDValue:aValue]];
+    - need to figure out when event is no triggering ui update
