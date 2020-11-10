@@ -108,6 +108,7 @@
              return;
          }
 
+
          _gameCoreOwnerProxy = [OEThreadProxy threadProxyWithTarget:[self gameCoreOwner] thread:[NSThread mainThread]];
          _helperConnection = [[NSXPCConnection alloc] initWithListenerEndpoint:endpoint];
          [_helperConnection setExportedInterface:[NSXPCInterface interfaceWithProtocol:@protocol(OEGameCoreOwner)]];
@@ -115,6 +116,8 @@
 
          [_helperConnection setRemoteObjectInterface:[NSXPCInterface interfaceWithProtocol:@protocol(OEXPCGameCoreHelper)]];
          [_helperConnection resume];
+
+         NSLog(@"In loadROMWithCompletionHandler with _target: %@", [_gameCoreOwnerProxy target]);
 
          __block void *gameCoreHelperPointer;
          id<OEXPCGameCoreHelper> gameCoreHelper =
@@ -147,9 +150,23 @@
                   return;
               }
 
+              OEGameCore * gameCoreInstance = [[[self plugin] controller] newGameCore];
+
+              NSLog(@"setting up gameCoreHelper plugin controller->gameCoreInstance: %@", gameCoreInstance);
+
+              //didPushNDSButton:79 forPlayer:1
+              //didReleaseNDSButton:79 forPlayer:1
+              /*
+                   TODO: NEED TO WRITE FUNCTION THAT:
+                      - attacches to run loop,
+                      - monitors memory, 
+                      - modifies inputs into core 
+              */
+
               [self setGameCoreHelper:gameCoreHelper];
               dispatch_async(dispatch_get_main_queue(), ^{
                   completionHandler();
+                  [gameCoreInstance didPushNDSButton:79 didReleaseNDSButton: 1];
               });
           }];
      }];

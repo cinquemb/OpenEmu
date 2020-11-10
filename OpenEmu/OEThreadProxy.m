@@ -42,6 +42,8 @@
 {
     _cachedMethodSignatures = CFDictionaryCreateMutable(NULL, 0, NULL, &kCFTypeDictionaryValueCallBacks);
     _target = target;
+
+    NSLog(@"Allocating proxy: %@", self);
     return self;
 }
 
