@@ -13,6 +13,22 @@ ipcs
 ipcrm
 
 
+# desume compile #
+
+rm -rf /Users/cinquemb/openemu/OpenEmu/desmume/desmume/src/frontend/cocoa/openemu/OpenEmuBase.framework
+
+cp -r /Users/cinquemb/Library/Developer/Xcode/DerivedData/OpenEmu-cynlarnyejsqjcfzmitsqxbmqmim/Build/Products/Release/OpenEmuBase.framework /Users/cinquemb/openemu/OpenEmu/desmume/desmume/src/frontend/cocoa/openemu/OpenEmuBase.framework
+
+xcodebuild -workspace DeSmuME\ \(Latest\).xcodeproj/project.xcworkspace -scheme "DeSmuME (OpenEmu Plug-in -- Latest Xcode)" -configuration Release
+
+ls /Users/cinquemb/Library/Developer/Xcode/DerivedData/DeSmuME_\(Latest\)-bkfmpssphidxyecpcqwykunhriau/Build/Products/Release/DeSmuME.oecoreplugin
+
+rm -rf ~/Library/Application\ Support/OpenEmu/Cores/DeSmuME.oecoreplugin/
+cp -r /Users/cinquemb/Library/Developer/Xcode/DerivedData/DeSmuME_\(Latest\)-bkfmpssphidxyecpcqwykunhriau/Build/Products/Release/DeSmuME.oecoreplugin/ ~/Library/Application\ Support/OpenEmu/Cores/DeSmuME.oecoreplugin/
+
+ls -lh ~/Library/Application\ Support/OpenEmu/Cores/DeSmuME.oecoreplugin/
+
+
 The compiled OpenEmu.app binary is located in the default DerivedData path, ~/Library/Developer/Xcode/DerivedData within a generated OpenEmu-... folder and then inside Build/Products/Release
 
 To compile OpenEmu and the core plugins, change -scheme "OpenEmu" to
@@ -44,3 +60,21 @@ desmume/src/frontend/cocoa/userinterface/preferencesWindowDelegate.mm
 
 - use shared memory to get BCI output commands
     - need to figure out when event is no triggering ui update
+    - look into (OEHIDDeviceHandler.mm):
+        - (io_service_t)serviceRef
+            {
+                return IOHIDDeviceGetService(_device);
+            }
+    - look at https://github.com/TASVideos/desmume/blob/471f53e5065fba99842da661fb521d885540e005/desmume/src/frontend/cocoa/userinterface/InputManager.mm#L2322 (
+ClientInputDevicePropertiesList MacInputDevicePropertiesEncoder::EncodeHIDQueue)
+    - idea on how to interact with device through IOHIDQueueRef via 
+        - IOHIDQueueCopyNextValueWithTimeout
+        - InputListFromHIDValue
+
+    - look into https://github.com/OpenEmu/OpenEmu-SDK/blob/74e37f6e4d5b6d95a9696ad6db689757a9944081/OpenEmuBase/OEGameCore.m
+        - figure out how to get access to OEGameCore from OEHIDevice
+            - [self  OE_executeFrame] maps to -> https://github.com/TASVideos/desmume/blob/e27cc87bdf4c59983e872c0c03d79717e77a6400/desmume/src/frontend/cocoa/openemu/NDSGameCore.mm
+                - need to do [self.cdsController inputHandler] to write to the input handler
+
+        - from OESystemResponder (OpenEmuSystem/OESystemResponder.mm)
+            - [self.client.cdsController inputHandler] to write to the input handler
