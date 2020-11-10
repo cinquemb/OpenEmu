@@ -74,7 +74,7 @@ ClientInputDevicePropertiesList MacInputDevicePropertiesEncoder::EncodeHIDQueue)
     - look into https://github.com/OpenEmu/OpenEmu-SDK/blob/74e37f6e4d5b6d95a9696ad6db689757a9944081/OpenEmuBase/OEGameCore.m
         - figure out how to get access to OEGameCore from OEHIDevice
             - [self  OE_executeFrame] maps to -> https://github.com/TASVideos/desmume/blob/e27cc87bdf4c59983e872c0c03d79717e77a6400/desmume/src/frontend/cocoa/openemu/NDSGameCore.mm
-                - need to do [self.cdsController inputHandler] to write to the input handler
+                - need to do [[self cdsController] inputHandler] to write to the input handler
 
         - from OESystemResponder (OpenEmuSystem/OESystemResponder.mm)
-            - [self.client.cdsController inputHandler] to write to the input handler
+            - [[[self client] cdsController] inputHandler] to write to the input handler
