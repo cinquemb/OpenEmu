@@ -34,6 +34,7 @@
 
 - (void)setVolume:(CGFloat)value;
 - (void)setPauseEmulation:(BOOL)pauseEmulation;
+
 - (void)setAudioOutputDeviceID:(AudioDeviceID)deviceID;
 
 - (void)setupEmulationWithCompletionHandler:(void(^)(IOSurfaceID surfaceID, OEIntSize screenSize, OEIntSize aspectSize))handler;
@@ -54,6 +55,10 @@
 - (void)systemBindingsDidSetEvent:(OEHIDEvent *)event forBinding:(__kindof OEBindingDescription *)bindingDescription playerNumber:(NSUInteger)playerNumber;
 - (void)systemBindingsDidUnsetEvent:(OEHIDEvent *)event forBinding:(__kindof OEBindingDescription *)bindingDescription playerNumber:(NSUInteger)playerNumber;
 
+
+- (oneway void)didPushNDSButton:(NSInteger)button forPlayer:(NSInteger)player;
+- (oneway void)didReleaseNDSButton:(NSInteger)button forPlayer:(NSInteger)player;
+- (void)frameRefreshThread:(id)anArgument;
 @end
 
 @protocol OEGameCoreOwner <NSObject>

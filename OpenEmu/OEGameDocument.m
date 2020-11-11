@@ -59,6 +59,11 @@
 
 #import "OpenEmu-Swift.h"
 
+
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <stdio.h>
+
 NSString *const OEGameCoreManagerModePreferenceKey = @"OEGameCoreManagerModePreference";
 NSString *const OEGameDocumentErrorDomain = @"OEGameDocumentErrorDomain";
 
@@ -91,6 +96,12 @@ typedef enum : NSUInteger
     BOOL                _isMuted;
     BOOL                _pausedByGoingToBackground;
     BOOL                _isTerminatingEmulation;
+
+
+    key_t key;
+    int shmid;
+    char *str;
+    NSString *_prev_str;
 }
 
 @property OEGameViewController *gameViewController;
@@ -290,6 +301,14 @@ typedef enum : NSUInteger
     }
 
     _gameCoreManager = [self _newGameCoreManagerWithCorePlugin:_corePlugin];
+
+    /*key = ftok("/Users/cinquemb/openemu/OpenEmu/nfbMemoryBridge", 'a'); 
+    shmid = shmget(key, 1024, 0666); 
+    if (shmid < 0) {
+        NSLog(@"*** shmget error (client) ***");
+    }
+    str = (char*) shmat(shmid, NULL, 0);
+    _prev_str = @"";*/
 
     return _gameCoreManager != nil;
 }
@@ -718,6 +737,8 @@ typedef enum : NSUInteger
 
             // set initial volume
             [self setVolume:[self volume] asDefault:NO];
+
+            NSLog(@"_gameViewController: %@", _gameViewController);
 
             [[[OEBindingsController defaultBindingsController] systemBindingsForSystemController:_systemPlugin.controller] addBindingsObserver:self];
 
@@ -1388,6 +1409,7 @@ typedef enum : NSUInteger
                  [self presentError:error];
                  return;
              }
+             NSLog(@"we are after load state");
 
              [self setEmulationPaused:NO];
          }];

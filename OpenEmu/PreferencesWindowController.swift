@@ -108,8 +108,10 @@ class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     func windowDidBecomeKey(notification: NSNotification) {
         
         konamiCodeIndex = 0
+
+        //localEvent = self.window!.nextEventMatchingMask(Int(NSEventMask.KeyDownMask.rawValue | NSEventMask.LeftMouseDraggedMask.rawValue))!
         
-        konamiCodeMonitor = NSEvent.addLocalMonitorForEventsMatchingMask(NSEventMask(rawValue: 10)) { event in
+        konamiCodeMonitor = NSEvent.addLocalMonitorForEventsMatchingMask(NSEventMask.KeyDown) { event in
             
             if Int((event.characters! as NSString).characterAtIndex(0)) == self.konamiCode[self.konamiCodeIndex] {
                 

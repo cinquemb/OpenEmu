@@ -75,7 +75,23 @@ NSString * const OEGameCoreErrorDomain = @"OEGameCoreErrorDomain";
 
 - (void)setPauseEmulation:(BOOL)pauseEmulation;
 {
+    NSLog(@"pausing game");
+    NSLog(@"gameCoreHelper from setPauseEmulation: %@", [self gameCoreHelper]);
     [[self gameCoreHelper] setPauseEmulation:pauseEmulation];
+}
+
+- (oneway void)didPushNDSButton:(NSInteger)button forPlayer:(NSInteger)player
+{
+    NSLog(@"push button");
+    [[self gameCoreHelper] didPushNDSButton:button forPlayer:player];
+}
+- (oneway void)didReleaseNDSButton:(NSInteger)button forPlayer:(NSInteger)player{
+    NSLog(@"release button");
+    [[self gameCoreHelper] didReleaseNDSButton:button forPlayer:player];
+}
+- (void)frameRefreshThread:(id)anArgument
+{
+    [[self gameCoreHelper] frameRefreshThread:nil];
 }
 
 - (void)setAudioOutputDeviceID:(AudioDeviceID)deviceID;

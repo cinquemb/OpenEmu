@@ -281,8 +281,6 @@
     [_gameCore setROMHeader:romHeader];
     [_gameCore setROMSerial:romSerial];
 
-    NSLog(@"in loadROMAtPath at OpenEmuHelperApp.m");
-
     _systemResponder.client = _gameCoreProxy;
     _systemResponder.globalEventsHandler = self;
 

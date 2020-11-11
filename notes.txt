@@ -83,5 +83,7 @@ ClientInputDevicePropertiesList MacInputDevicePropertiesEncoder::EncodeHIDQueue)
               NSLog(@"setting up gameCoreHelper: %@", [self plugin]);
 
 
+
               - figure out better access in OEXPCGameCoreManager.mm
 
+    - figure out why when trying to write inputs proxy keeps deallocating

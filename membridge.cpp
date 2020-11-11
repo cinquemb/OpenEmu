@@ -19,8 +19,8 @@ int main(){
 
         eventType: 4, cookieKey:0, axis:82, axisDirection:1, axisValue:, buttonNumber:82, buttonState:1, hatSwitchType:82, hatDirection:1, keyState:1, keyCode:82
     */
-    char *str_rest1 = "null,2,21,2,null,null,2,null,2,null,null,2";
-    char *str_rest2 = "null,3,42,2,2,null,2,2,2,2,2,2";
+    char *str_rest1 = "null";
+    char *str_rest2 = "null,3,42,2,2,null,2,2,2,2,2,79";
     char *str_rest3 = "null,4,0,82,1,null,82,1,82,1,1,82";
     std::cout << shmid << std::endl;
     //shmdt(str);

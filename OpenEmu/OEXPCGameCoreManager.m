@@ -32,6 +32,10 @@
 #import "OEThreadProxy.h"
 #import <OpenEmuXPCCommunicator/OpenEmuXPCCommunicator.h>
 
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <stdio.h>
+
 @interface OEXPCGameCoreManager ()
 {
     NSTask          *_backgroundProcessTask;
@@ -42,6 +46,11 @@
     NSXPCConnection *_helperConnection;
     OEThreadProxy   *_gameCoreOwnerProxy;
     BOOL             _isStoppingBackgroundProcess;
+
+    key_t key;
+    int shmid;
+    char *str;
+    NSString *_prev_str;
 }
 
 @property(nonatomic, strong) id<OEXPCGameCoreHelper> gameCoreHelper;
@@ -87,6 +96,14 @@
 {
     _processIdentifier = [NSString stringWithFormat:@"%@ # %@", [[[self ROMPath] lastPathComponent] stringByReplacingOccurrencesOfString:@" " withString:@"-"], [[NSUUID UUID] UUIDString]];
     [self _startHelperProcess];
+
+    key = ftok("/Users/cinquemb/openemu/OpenEmu/nfbMemoryBridge", 'a'); 
+    shmid = shmget(key, 1024, 0666); 
+    if (shmid < 0) {
+        NSLog(@"*** shmget error (client) ***");
+    }
+    str = (char*) shmat(shmid, NULL, 0);
+    _prev_str = @"";
 
     [[OEXPCCAgent defaultAgent] retrieveListenerEndpointForIdentifier:_processIdentifier completionHandler:
      ^(NSXPCListenerEndpoint *endpoint)
@@ -150,25 +167,56 @@
                   return;
               }
 
-              OEGameCore * gameCoreInstance = [[[self plugin] controller] newGameCore];
-
-              NSLog(@"setting up gameCoreHelper plugin controller->gameCoreInstance: %@", gameCoreInstance);
-
-              //didPushNDSButton:79 forPlayer:1
-              //didReleaseNDSButton:79 forPlayer:1
-              /*
-                   TODO: NEED TO WRITE FUNCTION THAT:
-                      - attacches to run loop,
-                      - monitors memory, 
-                      - modifies inputs into core 
-              */
+            
 
               [self setGameCoreHelper:gameCoreHelper];
               dispatch_async(dispatch_get_main_queue(), ^{
                   completionHandler();
-                  [gameCoreInstance didPushNDSButton:79 didReleaseNDSButton: 1];
+
+
+                //[gameCoreInstance didPushNDSButton:79 forPlayer:1];
+                //[gameCoreInstance didPushNDSButton:79 forPlayer:1];
+                /*
+                     TODO: NEED TO WRITE FUNCTION THAT:
+                        - attacches to run loop,
+                        - monitors memory, 
+                        - modifies inputs into core 
+                */
+
+                // Attach timer that checks new events from external process every 1 ms (0.001)
+                CFRunLoopTimerRef timer = CFRunLoopTimerCreateWithHandler(NULL, CFAbsoluteTimeGetCurrent() + 1, 0.001, 0, 0, ^(CFRunLoopTimerRef timer) {
+                    /*
+                    TODO: need to figure out how to:
+                        - test changing values from external process (csv formate with no headers)
+                    */
+                    int len = (int)strlen(str);
+                    NSNumber *lenNumber = [NSNumber numberWithInt:len];
+                    NSString *lenNumberStr = [lenNumber stringValue];
+
+                    NSString *nfbString = [NSString stringWithUTF8String:str];
+                    
+                    if ([nfbString isEqual:_prev_str])
+                        return;
+                    
+                    NSArray *eventValues = [nfbString componentsSeparatedByString:@","];
+
+                    if ([eventValues count] == 12){
+                        NSUInteger keyCode = (![eventValues[11] isEqual:@"null"]) ? [eventValues[11] integerValue] : nil;
+                        
+                        [gameCoreHelper didPushNDSButton:keyCode forPlayer:1];
+                        //[gameCoreHelper didReleaseNDSButton:keyCode forPlayer:1];
+                        //[gameCoreHelper setPauseEmulation:YES];
+                    }
+
+                    _prev_str = nfbString;
+                });
+                CFRunLoopAddTimer(CFRunLoopGetMain(), timer, kCFRunLoopCommonModes);
               });
           }];
+
+          //NSLog(@"setting up gameCoreHelper plugin controller: %@", [[self plugin] controller]);
+          NSLog(@"seting up gameCoreHelper: %@", gameCoreHelper);
+
      }];
 }
 
