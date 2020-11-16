@@ -5,6 +5,20 @@
 #include <thread>
 #include <chrono>
 
+#define MAX_CMD_LENGTH     50
+
+std::string get_button_press(){
+    do {
+        std::cout << '\n' << "Press a key to continue...";
+    } while (std::cin.get() != '\n');
+
+    char output[MAX_CMD_LENGTH];
+    std::cin.getline(output, MAX_CMD_LENGTH);
+    std::string o = output;
+    o.erase(o.find_last_not_of(" \n")+1);
+    return o;
+}
+
 int main(){ 
 
     key_t key = ftok("/Users/cinquemb/openemu/OpenEmu/nfbMemoryBridge", 'a');
@@ -20,13 +34,19 @@ int main(){
         eventType: 4, cookieKey:0, axis:82, axisDirection:1, axisValue:, buttonNumber:82, buttonState:1, hatSwitchType:82, hatDirection:1, keyState:1, keyCode:82
     */
     char *str_rest1 = "null";
-    char *str_rest2 = "null,3,42,2,2,null,2,2,2,2,2,79";
-    char *str_rest3 = "null,4,0,82,1,null,82,1,82,1,1,82";
+    char *str_rest2 = "null,3,42,2,2,null,2,2,2,2,2,6";
+    char *str_rest3 = "null,4,0,82,1,null,82,1,82,1,1,4";
+    std::string str_rest4 = "null,4,0,82,1,null,82,1,82,1,1,";
     std::cout << shmid << std::endl;
     //shmdt(str);
     int alt = 0;
     while (true) {
-        if (alt == 0){
+        std::string outstring = str_rest4 + get_button_press();
+        strcpy(str, outstring.c_str());
+
+        std::cout << outstring << std::endl;
+        
+        /*if (alt == 0){
             strcpy(str, str_rest3);
             std::string outstring = str;
             std::cout << outstring << std::endl;
@@ -36,7 +56,7 @@ int main(){
             std::string outstring = str;
             std::cout << outstring << std::endl;
             alt = 0;
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }*/
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 } 

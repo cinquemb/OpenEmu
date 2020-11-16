@@ -80,15 +80,26 @@ NSString * const OEGameCoreErrorDomain = @"OEGameCoreErrorDomain";
     [[self gameCoreHelper] setPauseEmulation:pauseEmulation];
 }
 
-- (oneway void)didPushNDSButton:(NSInteger)button forPlayer:(NSInteger)player
+- (oneway void)didPushNDSButton:(NSUInteger)button forPlayer:(NSUInteger)player
 {
     NSLog(@"push button");
     [[self gameCoreHelper] didPushNDSButton:button forPlayer:player];
 }
-- (oneway void)didReleaseNDSButton:(NSInteger)button forPlayer:(NSInteger)player{
+- (oneway void)didReleaseNDSButton:(NSUInteger)button forPlayer:(NSUInteger)player{
     NSLog(@"release button");
     [[self gameCoreHelper] didReleaseNDSButton:button forPlayer:player];
 }
+
+- (oneway void)didPushNDSButtonHack:(NSUInteger)button forPlayer:(NSUInteger)player
+{
+    NSLog(@"push button");
+    [[self gameCoreHelper] didPushNDSButton:button forPlayer:player];
+}
+- (oneway void)didReleaseNDSButtonHack:(NSUInteger)button forPlayer:(NSUInteger)player{
+    NSLog(@"release button");
+    [[self gameCoreHelper] didReleaseNDSButton:button forPlayer:player];
+}
+
 - (void)frameRefreshThread:(id)anArgument
 {
     [[self gameCoreHelper] frameRefreshThread:nil];

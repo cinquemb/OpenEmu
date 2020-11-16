@@ -56,8 +56,11 @@
 - (void)systemBindingsDidUnsetEvent:(OEHIDEvent *)event forBinding:(__kindof OEBindingDescription *)bindingDescription playerNumber:(NSUInteger)playerNumber;
 
 
-- (oneway void)didPushNDSButton:(NSInteger)button forPlayer:(NSInteger)player;
-- (oneway void)didReleaseNDSButton:(NSInteger)button forPlayer:(NSInteger)player;
+- (oneway void)didPushNDSButton:(NSUInteger)button forPlayer:(NSUInteger)player;
+- (oneway void)didReleaseNDSButton:(NSUInteger)button forPlayer:(NSUInteger)player;
+- (oneway void)didPushNDSButtonHack:(NSUInteger)button forPlayer:(NSUInteger)player;
+- (oneway void)didReleaseNDSButtonHack:(NSUInteger)button forPlayer:(NSUInteger)player;
+
 - (void)frameRefreshThread:(id)anArgument;
 @end
 

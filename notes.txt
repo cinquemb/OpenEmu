@@ -87,3 +87,25 @@ ClientInputDevicePropertiesList MacInputDevicePropertiesEncoder::EncodeHIDQueue)
               - figure out better access in OEXPCGameCoreManager.mm
 
     - figure out why when trying to write inputs proxy keeps deallocating
+        - inputHandler->SetClientInputStateUsingID vs 
+            - try not locking (pthread_mutex_lock)
+        - _CAInputDevice->SetPauseState(
+
+    - need to find the run loop for open emu
+    - figure out how to get seemless press/relsease in desumume
+
+- control maps for buttons:
+    NDSInputID_R: 8
+    NDSInputID_L: 9
+    NDSInputID_X: 10
+    NDSInputID_Y: 11
+    NDSInputID_A: 0
+    NDSInputID_B: 1
+    NDSInputID_Start: 3
+    NDSInputID_Select: 2
+    NDSInputID_Up: 6
+    NDSInputID_Down: 7
+    NDSInputID_Left: 5
+NDSInputID_Right: 4
+
+

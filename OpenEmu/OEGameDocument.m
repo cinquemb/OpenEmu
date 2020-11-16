@@ -60,9 +60,9 @@
 #import "OpenEmu-Swift.h"
 
 
-#include <sys/ipc.h>
+/*#include <sys/ipc.h>
 #include <sys/shm.h>
-#include <stdio.h>
+#include <stdio.h>*/
 
 NSString *const OEGameCoreManagerModePreferenceKey = @"OEGameCoreManagerModePreference";
 NSString *const OEGameDocumentErrorDomain = @"OEGameDocumentErrorDomain";
@@ -98,10 +98,10 @@ typedef enum : NSUInteger
     BOOL                _isTerminatingEmulation;
 
 
-    key_t key;
+    /*key_t key;
     int shmid;
     char *str;
-    NSString *_prev_str;
+    NSString *_prev_str;*/
 }
 
 @property OEGameViewController *gameViewController;
@@ -273,6 +273,8 @@ typedef enum : NSUInteger
             return NO;
         }
     }
+
+    NSLog(@"in OE_setupDocumentWithROM: %@", core);
 
     _rom = rom;
     _romFileURL = fileURL;
@@ -751,13 +753,13 @@ typedef enum : NSUInteger
         [[[OEBindingsController defaultBindingsController] systemBindingsForSystemController:_systemPlugin.controller] removeBindingsObserver:self];
         _gameCoreManager = nil;
         [self close];
-
         handler(NO, error);
     }];
 }
 
 - (void)OE_startEmulation
 {
+    NSLog(@"in OE_startEmulation from OEGameDocument");
     if(_emulationStatus != OEEmulationStatusSetup)
         return;
 
@@ -1409,9 +1411,54 @@ typedef enum : NSUInteger
                  [self presentError:error];
                  return;
              }
-             NSLog(@"we are after load state");
 
              [self setEmulationPaused:NO];
+             NSLog(@"we are after load state");
+
+
+              //[gameCoreInstance didPushNDSButton:79 forPlayer:1];
+              //[gameCoreInstance didPushNDSButton:79 forPlayer:1];
+              /*
+                   TODO: NEED TO WRITE FUNCTION THAT:
+                      - attacches to run loop,
+                      - monitors memory, 
+                      - modifies inputs into core 
+              */
+
+              // Attach timer that checks new events from external process every 1 ms (0.001)
+              /*CFRunLoopTimerRef timer = CFRunLoopTimerCreateWithHandler(NULL, CFAbsoluteTimeGetCurrent() + 1, 0.001, 0, 0, ^(CFRunLoopTimerRef timer) {
+                  //TODO: need to figure out how to:
+                  //    - test changing values from external process (csv formate with no headers)
+                  int len = (int)strlen(str);
+                  NSNumber *lenNumber = [NSNumber numberWithInt:len];
+                  NSString *lenNumberStr = [lenNumber stringValue];
+
+                  NSString *nfbString = [NSString stringWithUTF8String:str];
+                  
+                  if ([nfbString isEqual:_prev_str])
+                      return;
+                  
+                  NSArray *eventValues = [nfbString componentsSeparatedByString:@","];
+
+                  if ([eventValues count] == 12){
+                      NSUInteger keyCode = (![eventValues[11] isEqual:@"null"]) ? [eventValues[11] integerValue] : nil;
+                      
+                      NSLog(@"before push button");
+                      //[_gameCoreManager setPauseEmulation:YES];
+                      [_gameCoreManager didReleaseNDSButtonHack:keyCode forPlayer:1];
+                      //[_gameCoreManager setPauseEmulation:NO];
+                      NSLog(@"after push button");
+                      //[_gameCoreManager frameRefreshThread:nil];
+                      NSLog(@"after frame refresh");
+                      //[_gameCoreManager didReleaseNDSButton:keyCode forPlayer:1];
+                      //[gameCoreHelper setPauseEmulation:YES];
+                  }
+
+                  _prev_str = nfbString;
+              });
+              CFRunLoopAddTimer(CFRunLoopGetMain(), timer, kCFRunLoopCommonModes);*/
+
+             
          }];
     };
 
