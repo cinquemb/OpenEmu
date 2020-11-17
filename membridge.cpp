@@ -1,4 +1,5 @@
 #include <iostream> 
+#include <sstream>
 #include <sys/ipc.h> 
 #include <sys/shm.h> 
 #include <stdio.h>
@@ -19,6 +20,20 @@ std::string get_button_press(){
     return o;
 }
 
+template <typename T>
+inline std::string ToString(T value) {
+    std::stringstream out;
+    out << std::fixed;  
+    out << value;
+    return out.str();
+}
+
+std::string get_time(){
+    double cur_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000.;
+    std::string cur_time_str = ToString(cur_time);
+    return cur_time_str;
+}
+
 int main(){ 
 
     key_t key = ftok("/Users/cinquemb/openemu/OpenEmu/nfbMemoryBridge", 'a');
@@ -36,16 +51,18 @@ int main(){
     char *str_rest1 = "null";
     char *str_rest2 = "null,3,42,2,2,null,2,2,2,2,2,6";
     char *str_rest3 = "null,4,0,82,1,null,82,1,82,1,1,4";
-    std::string str_rest4 = "null,4,0,82,1,null,82,1,82,1,1,";
+    std::string str_rest4 = ",4,0,82,1,null,82,1,82,1,1,";
     std::cout << shmid << std::endl;
     //shmdt(str);
     int alt = 0;
     while (true) {
-        std::string outstring = str_rest4 + get_button_press();
-        strcpy(str, outstring.c_str());
-
-        std::cout << outstring << std::endl;
+        double cur_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() / 1000.;
+        std::string cur_time_str = ToString(cur_time);
         
+        std::string outstring = str_rest4 + get_button_press();
+        strcpy(str, (get_time() + outstring).c_str());
+
+        std::cout << (get_time() + outstring) << std::endl;
         /*if (alt == 0){
             strcpy(str, str_rest3);
             std::string outstring = str;
