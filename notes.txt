@@ -93,6 +93,7 @@ ClientInputDevicePropertiesList MacInputDevicePropertiesEncoder::EncodeHIDQueue)
 
     - need to find the run loop for open emu
     - figure out how to get seemless press/relsease in desumume
+        - still some kind of input lag not registering
 
 - control maps for buttons:
     NDSInputID_R: 8
